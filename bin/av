@@ -1,0 +1,21 @@
+#!/usr/local/bin/python3
+import argparse
+from healthplan.healthplan import HealthPlan
+
+from av.av import calculate_av
+
+parser = argparse.ArgumentParser('Calculate the actuarial value of a health plan')
+
+parser.add_argument('plan', metavar='plan')
+
+plan = HealthPlan()
+try:
+    plan.parseJSON(parser.parse_args().plan)
+
+    calculate_av(plan)
+
+    print("The actuarial value of the plan is {0}".format(plan.av))
+    print("The benefit plan falls in the {0} metal level".format(plan.tier.name))
+
+except ValueError:
+    print("Unable to parse JSON please check that the JSON is formatted correctly.")
