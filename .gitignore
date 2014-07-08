@@ -1,0 +1,12 @@
+pyActuarialValue.egg-info/
+*__pycache__/
+*.egg/
+
+# test data
+.coverage
+av/data/test.db
+cover/
+
+# distribution data
+dist/
+build/

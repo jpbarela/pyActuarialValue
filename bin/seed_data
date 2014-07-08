@@ -1,0 +1,4 @@
+#!/usr/local/bin/python3
+from av.seeddata import seed_data
+
+seed_data()
