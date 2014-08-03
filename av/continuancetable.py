@@ -11,21 +11,25 @@ class ContinuanceTable(Base):
     membership = Column(Integer)
     avg_cost = Column(Float)
 
-    def __interpolate_value(self, session, value, column):
-        value_filter_query = "maximum <= {0} and continuance_table_id = {1}".format(value, self.id)
-        lower_row = session.query(ContinuanceTableRow).filter(value_filter_query).\
+    def __interpolate_values(self, session, value, columns):
+        lower_row_query = "maximum <= {0} and continuance_table_id = {1}".format(value, self.id)
+        lower_row =  session.query(ContinuanceTableRow).filter(lower_row_query).\
             order_by(desc(ContinuanceTableRow.maximum)).first()
-        low_value = getattr(lower_row, column)
+        lower_values = [getattr(lower_row, column) for column in columns]
         if lower_row.maximum != value:
             upper_row_query = "maximum > {0} and continuance_table_id = {1}".format(value, self.id)
             upper_row = session.query(ContinuanceTableRow).filter(upper_row_query).\
                 order_by(ContinuanceTableRow.maximum).first()
-            upper_value = getattr(upper_row, column)
-            maxed_value = (value - lower_row.maximum)/(upper_row.maximum - lower_row.maximum) * \
-                          (upper_value - low_value) + low_value
+            upper_values = [getattr(upper_row, column) for column in columns]
+            slice_values = [(value - lower_row.maximum)/(upper_row.maximum - lower_row.maximum) *
+                            (upper_value - lower_value) + lower_value
+                            for (upper_value, lower_value) in zip(upper_values, lower_values)]
         else:
-            maxed_value = low_value
-        return maxed_value
+            slice_values = lower_values
+        return slice_values
+
+    def __repr__(self):
+        return "<ContinuanceTable id={0}, name={1}>".format(self.id, self.name)
 
     @classmethod
     def find(cls, session, table_name):
@@ -39,23 +43,53 @@ class ContinuanceTable(Base):
         session.add(new_row)
         session.commit()
 
-    def slice(self, session, high, low=0, column='maxed_value'):
-        high_value = self.__interpolate_value(session, high, column)
+    def slice(self, session, high, low=0, columns=['maxed_value']):
+        high_values = self.__interpolate_values(session, high, columns)
         if low != 0:
-            low_value = self.__interpolate_value(session, low, column)
+            low_values = self.__interpolate_values(session, low, columns)
         else:
-            low_value = 0
-        return high_value - low_value
+            low_values = [0] * len(columns)
+        return [high - low for (high, low) in zip(high_values, low_values)]
 
 class ContinuanceTableRow(Base):
     __tablename__ = 'continuance_table_rows'
 
-    id = Column(Integer, primary_key=True)
-    maximum = Column(Integer)
-    membership = Column(Integer)
-    maxed_value = Column(Float)
-    continuance_table_id = Column(Integer, ForeignKey('continuance_tables.id'))
-    preventive_care_value = Column(Float)
-    preventive_care_utilization = Column(Float)
+    id =                            Column(Integer, primary_key=True)
+    continuance_table_id =          Column(Integer, ForeignKey('continuance_tables.id'))
+    er_value =                      Column(Float)
+    er_utilization =                Column(Float)
+    generic_value =                 Column(Float)
+    generic_utilization =           Column(Float)
+    imaging_value =                 Column(Float)
+    imaging_utilization =           Column(Float)
+    ip_value =                      Column(Float)
+    ip_admits =                     Column(Float)
+    laboratory_value =              Column(Float)
+    laboratory_utilization =        Column(Float)
+    maximum =                       Column(Integer)
+    maxed_value =                   Column(Float)
+    membership =                    Column(Integer)
+    mental_health_value =           Column(Float)
+    mental_health_utilization =     Column(Float)
+    non_preferred_value =           Column(Float)
+    non_preferred_utilization =     Column(Float)
+    occupation_physical_therapy_value = Column(Float)
+    occupation_physical_therapy_utilization = Column(Float)
+    preferred_value =               Column(Float)
+    preferred_utilization =         Column(Float)
+    preventive_care_value =         Column(Float)
+    preventive_care_utilization =   Column(Float)
+    primary_care_value =            Column(Float)
+    primary_care_utilization =      Column(Float)
+    skilled_nursing_value =         Column(Float)
+    skilled_nursing_utilization =   Column(Float)
+    specialist_value =              Column(Float)
+    specialist_utilization =        Column(Float)
+    specialty_value =               Column(Float)
+    specialty_utilization =         Column(Float)
+    speech_value =                  Column(Float)
+    speech_utilization =            Column(Float)
+    x_rays_value =                  Column(Float)
+    x_ray_utilization =             Column(Float)
 
     continuance_table = relationship("ContinuanceTable", backref=backref('continuance_table_rows', order_by=id))

@@ -1,21 +1,36 @@
 #!/usr/local/bin/python3
 import argparse
-from healthplan.healthplan import HealthPlan
+from healthplan.healthplan import HealthPlan, valid_json
 
-from av.av import calculate_av
+from av.actuarialvaluecalculator import ActuarialValueCalculator
+from av.database import connection
 
 parser = argparse.ArgumentParser('Calculate the actuarial value of a health plan')
 
 parser.add_argument('plan', metavar='plan')
 
-plan = HealthPlan()
-try:
-    plan.parseJSON(parser.parse_args().plan)
+def run_script():
+    plan = HealthPlan()
 
-    calculate_av(plan)
+    json = parser.parse_args().plan
 
-    print("The actuarial value of the plan is {0}".format(plan.av))
-    print("The benefit plan falls in the {0} metal level".format(plan.tier.name))
+    try:
+        json_valid = valid_json(json)
+    except ValueError:
+        print('Unable to parse JSON please check that the JSON is formatted correctly.')
+        return 1
 
-except ValueError:
-    print("Unable to parse JSON please check that the JSON is formatted correctly.")
+    if json_valid:
+        session = connection.Session()
+        plan.parse_JSON(json)
+        calc = ActuarialValueCalculator(session)
+        calc.calculate_av(plan)
+
+        print('The actuarial value of the plan is {0}'.format(plan.av))
+        print('The benefit plan falls in the {0} metal level'.format(plan.tier.name))
+        return 0
+    else:
+        print('JSON response does not include required attributes')
+        return 2
+
+run_script()
