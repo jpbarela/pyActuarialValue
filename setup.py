@@ -4,7 +4,8 @@ try:
     from pypandoc import convert
     read_md = lambda f: convert(f, 'rst')
 except ImportError:
-    print("warning: pypandoc module not found, could not convert Markdown to RST")
+    print("warning: pypandoc module not found, could not convert Markdown to "
+          "RST")
     read_md = lambda f: open(f, 'r').read()
 
 setup(name='pyActuarialValue',
@@ -18,13 +19,11 @@ setup(name='pyActuarialValue',
       keywords='actuarial value',
       packages=['av', 'healthplan', 'av.database'],
       package_data={
-         'av':['data/av.db']
+          'av': ['data/av.db']
       },
       install_requires=[
           'enum34',
-          'nose',
           'pypandoc',
-          'rednose',
           'sqlalchemy'
       ],
       test_suite='nose.collector',
