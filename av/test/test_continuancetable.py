@@ -4,6 +4,7 @@ from av.database.base import Base
 from av.continuancetable import ContinuanceTable, ContinuanceTableRow
 from av.test.basedatatest import BaseDataTest
 
+
 class TestContinuanceTable(BaseDataTest):
 
     def setUp(self):
@@ -14,24 +15,42 @@ class TestContinuanceTable(BaseDataTest):
         Base.metadata.drop_all(self.engine)
 
     def check_continuance_value(self, test_values, columns=None):
-        if test_values[1] == None:
-            if columns == None:
-                slice_value = self.test_continuance_table.slice(self.session, test_values[0])
+        if test_values[1] is None:
+            if columns is None:
+                slice_value = self.test_continuance_table.slice(self.session,
+                                                                test_values[0])
             else:
-                slice_value = self.test_continuance_table.slice(self.session, test_values[0], columns=columns)
+                slice_value = (self.test_continuance_table.
+                               slice(self.session,
+                                     test_values[0],
+                                     columns=columns))
         else:
-            if columns == None:
-                slice_value = self.test_continuance_table.slice(self.session, test_values[0], test_values[1])
+            if columns is None:
+                slice_value = self.test_continuance_table.slice(self.session,
+                                                                test_values[0],
+                                                                test_values[1])
             else:
-                slice_value = self.test_continuance_table.slice(self.session, test_values[0], test_values[1],
-                                                                columns=columns)
+                slice_value = (self.test_continuance_table.
+                               slice(self.session,
+                                     test_values[0],
+                                     test_values[1],
+                                     columns=columns))
+
         for test, expected in zip(slice_value, test_values[2]):
             assert_almost_equal(test,
                                 expected,
                                 2,
-                                "Slice with with value is not correct. Actual {0} should be {1}".
-                                format(test,
-                                       expected))
+                                "Slice with value is not correct. Actual {0} "
+                                "should be {1}".format(test, expected))
+
+    def check_inverse(self, test_values):
+        inverse = self.test_continuance_table.inverse(self.session,
+                                                      test_values[0])
+        assert_almost_equal(inverse,
+                            test_values[1],
+                            2,
+                            "Inverse is not correct. Should be {0} is {1}".
+                            format(test_values[1], inverse))
 
     def create_basic_table(self):
         self.test_continuance_table = ContinuanceTable(name='Test', membership=1000, avg_cost=1000)
@@ -39,7 +58,7 @@ class TestContinuanceTable(BaseDataTest):
         self.test_continuance_table.add_value(self.session, maximum=500, membership=500, maxed_value=450)
         self.test_continuance_table.add_value(self.session, maximum=1000, membership=250, maxed_value=750)
 
-    #Class methods
+    # Class methods
     def test_find(self):
         test_table1 = ContinuanceTable(name='Test1', membership=1000, avg_cost=1000)
         test_table2 = ContinuanceTable(name='Test2', membership=1500, avg_cost=100)
@@ -49,7 +68,7 @@ class TestContinuanceTable(BaseDataTest):
         found_table = ContinuanceTable.find(self.session, "Test1")
         assert found_table.id == test_table1.id, 'Table was not found'
 
-    #Private methods
+    # Private methods
     def test_repr(self):
         test_table = ContinuanceTable(name='Test1')
         self.session.add(test_table)
@@ -57,7 +76,7 @@ class TestContinuanceTable(BaseDataTest):
         assert repr(test_table) == "<ContinuanceTable id={0}, name={1}>".format(test_table.id, test_table.name), \
             "Test representation not correct, actual representation {0}".format(test_table)
 
-    #Instance methods
+    # Instance methods
     def test_add_value(self):
         self.test_continuance_table = ContinuanceTable(name='Test', membership=1000, avg_cost=1000)
         self.test_continuance_table.add_value(self.session, maximum=0, membership=1000, maxed_value=0)
@@ -65,6 +84,12 @@ class TestContinuanceTable(BaseDataTest):
         assert self.session.query(ContinuanceTableRow).filter(ContinuanceTableRow.continuance_table_id == table.id,
                                                             ContinuanceTableRow.maximum == 0).count() == 1, \
             'Value was not added'
+
+    def test_inverse(self):
+        self.create_basic_table()
+        test_inverses = [[450, 500], [510, 600]]
+        for inverse in test_inverses:
+            self.check_inverse(inverse)
 
     def test_slice_values_high(self):
         self.create_basic_table()

@@ -1,9 +1,11 @@
 import os
 import csv
 
-from av.continuancetable import ContinuanceTable, ContinuanceTableRow
+import av
+from av.continuancetable import ContinuanceTable
 from av.database.connection import Session, engine
 from av.database.base import Base
+
 
 def load_file(file_name, session, field_names):
     data_path = os.path.join(os.path.dirname(__file__), 'data', file_name)
@@ -16,6 +18,8 @@ def load_file(file_name, session, field_names):
         table_rows = csv.reader(csvfile)
         for row in table_rows:
             if row[0] != 'Maximum':
+                fields = {}
+
                 if row[0] != 'Unlimited':
                     if row[0] == '0':
                         table.membership = row[1]
@@ -25,8 +29,14 @@ def load_file(file_name, session, field_names):
                     table.add_value(session, **fields)
                 else:
                     table.avg_cost = row[2]
+                    for index, value in enumerate(field_names):
+                        fields[value] = row[index]
+                    fields['maximum'] = av.MAX_VALUE
+                    table.add_value(session, **fields)
+
         session.add(table)
         session.commit()
+
 
 def seed_data():
     session = Session()
