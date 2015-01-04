@@ -89,6 +89,17 @@ def test_valid_json_includes_moop():
     assert HealthPlan.valid_json(test_json) is False, 'Required moop missing.'
 
 
+def test_valid_json_includes_seperate_moops():
+    test_json = json.dumps({'medical': {'deductible': 1000,
+                                        'coinsurance': .8,
+                                        'moop': 2500},
+                            'drug': {'deductible': 250,
+                                     'coinsurance': .8,
+                                     'moop': 750}})
+    assert HealthPlan.valid_json(test_json) is True, \
+        'Seperate moops return false.'
+
+
 @raises(ValueError)
 def test_valid_JSON_raises_value_error():
     test_json = '{"deductible": 1000, "coinsurance": .8}'
