@@ -179,20 +179,7 @@ def test_calculate_av_separate():
 #         " is {1}".format(health_plan_array[1], test_health_plan.tier)
 #
 #
-# def check_set_tier_integrated(test_tier_array):
-#     test_health_plan = create_plan(test_tier_array[0], separate=False)
-#
-#     calc._set_metal_tier(test_health_plan)
-#     integrated_table = ContinuanceTable.find(session, test_tier_array[1] + 'Integrated')
-#     medical_table = integrated_table
-#     assert calc._integrated_table == integrated_table, \
-#         "Integrated Table is not correct for tier {0}, actual {1} expected {2}".format(test_tier_array[0],
-#                                                                                        calc._integrated_table,
-#                                                                                        integrated_table)
-#     assert calc._medical_table == medical_table, \
-#         "Medical Table is not correct for tier {0}, actual {1} expected {2}".format(test_tier_array[0],
-#                                                                                     calc._medical_table,
-#                                                                                     medical_table)
+
 #
 #
 # def check_set_tier_separate(test_tier_array):
@@ -376,11 +363,6 @@ def test_calculate_av_separate():
 #         check_determine_total_expenses(test_tier)
 #
 #
-# def test__set_tier_integrated():
-#     tiers = [[Tier.platinum, 'Platinum'], [Tier.gold, 'Gold'], [Tier.silver, 'Silver'], [Tier.bronze, 'Bronze'],
-#              [Tier.na, 'Platinum'], [None, 'Platinum']]
-#     for tier in tiers:
-#         check_set_tier_integrated(tier)
 #
 #
 # def test__set_tier_separate():

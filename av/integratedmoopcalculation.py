@@ -3,5 +3,13 @@ from av.avcalculation import AVCalculation
 
 class IntegratedMOOPCalculation(AVCalculation):
 
-    def __init__(self, session, health_plan):
-        AVCalculation.__init__(self, session, health_plan)
+    def expenses_below_deductible(self, deductible):
+        return 0
+
+    @property
+    def coinsurance_expenses(self):
+        return 0
+
+    @property
+    def moop_cost_level(self):
+        return self._health_plan.moop

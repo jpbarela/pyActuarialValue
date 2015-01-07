@@ -17,7 +17,7 @@ setup(name='pyActuarialValue',
       author_email='barela@jpbarela.com',
       license='Apache 2.0',
       keywords='actuarial value',
-      packages=['av', 'healthplan', 'av.database'],
+      packages=['av', 'healthplan', 'av.database', 'lazyproperty'],
       package_data={
           'av': ['data/av.db']
       },
