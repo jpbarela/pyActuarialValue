@@ -177,27 +177,25 @@ def test_total_cost():
 
 # Test complete calculations
 def test_av_for_basic_integrated_plans():
-    test_plans = [
-        [{'deductible': 500,
-          'coinsurance': .9,
-          'moop': 1000,
-          'tier': 'platinum'},
-         Tier.platinum, .9065],
-        [{'deductible': 500,
-          'coinsurance': .8,
-          'moop': 4500,
-          'tier': 'gold'},
-         Tier.gold, .8164],
-        [{'deductible': 3500,
-          'coinsurance': 1,
-          'moop': 3500,
-          'tier': 'silver'},
-         Tier.silver, .7116],
-        [{'deductible': 3000,
-          'coinsurance': .5,
-          'moop': 6850,
-          'tier': 'bronze'},
-         Tier.bronze, .6175]
-    ]
+    test_plans = [[{'deductible': 500,
+                    'coinsurance': .9,
+                    'moop': 1000,
+                    'tier': 'platinum'},
+                   Tier.platinum, .9065],
+                  [{'deductible': 500,
+                    'coinsurance': .8,
+                    'moop': 4500,
+                    'tier': 'gold'},
+                   Tier.gold, .8164],
+                  [{'deductible': 3500,
+                    'coinsurance': 1,
+                    'moop': 3500,
+                    'tier': 'silver'},
+                   Tier.silver, .7116],
+                  [{'deductible': 3000,
+                    'coinsurance': .5,
+                    'moop': 6850,
+                    'tier': 'bronze'},
+                   Tier.bronze, .6175]]
     for test_plan in test_plans:
         check_av(test_plan)
